@@ -14,20 +14,14 @@ const getBooks = asyncHandler(async (req, res) => {
 // @route POST /api/books
 // @access Private
 const setBook = asyncHandler(async (req, res) => {
-  const { title = undefined, author = undefined } = req.body;
+  const { title, author, published_date } = req.body;
 
-  // TODO: extract validation to validator function
-  if (!title) {
+  if (!title || !author) {
     res.status(400);
-    throw new Error("Please supply book title");
+    throw new Error("Please add all book information");
   }
 
-  if (!author) {
-    res.status(400);
-    throw new Error("Please supply a author");
-  }
-
-  const newBook = await Book.create({ title, author });
+  const newBook = await Book.create({ title, author, published_date, created_by: req.user.id });
 
   res.status(200).json(newBook);
 });
