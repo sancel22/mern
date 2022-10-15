@@ -7,3 +7,10 @@ export interface IFormUser {
   password: string;
   password2: string;
 }
+
+export interface ApiResponseError {
+  status: number;
+  message: FixMe;
+}
+
+export type FixMe = any;

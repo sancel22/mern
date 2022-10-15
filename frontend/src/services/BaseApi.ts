@@ -8,15 +8,15 @@ const axiosAPI = axios.create({
   },
 });
 
-axiosAPI.interceptors.request.use((request) => {
-  // if (typeof document !== "undefined" && document.cookie) {
-  //   const { jwt = undefined } = document.cookie;
-  //   if (jwt) {
-  //     request.headers.authorization = `Bearer ${document.cookie.jwt}`;
-  //   }
-  // }
+axiosAPI.interceptors.request.use((config) => {
+  if (typeof localStorage !== "undefined") {
+    const jwt = localStorage.getItem("jwt");
+    if (jwt && config.headers) {
+      config.headers.authorization = `Bearer ${jwt}`;
+    }
+  }
 
-  return request;
+  return config;
 });
 
 export default class BaseAPI {

@@ -25,6 +25,10 @@ class UserApi extends BaseAPI {
   login = async (data: Pick<IFormUser, "email" | "password">) => {
     return await this.post("/login", data);
   };
+
+  getMe = async() => {
+    return await this.get('/me');
+  }
 }
 
 function useUserApi() {

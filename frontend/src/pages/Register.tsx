@@ -13,12 +13,22 @@ import { FaUser } from "react-icons/fa";
 import { Roles } from "../constants/app";
 import { IFormUser } from "../interface/app";
 import { useUserApi } from "../services/UserApi";
+import { useSession } from "../context/session";
+import { useEffect } from "react";
 
 const roles = Object.entries(Roles);
 
 const Register = () => {
   const userApi = useUserApi();
+  const { isLoggedIn } = useSession();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
+
   return (
     <Col md={{ span: 4, offset: 4 }}>
       <Row>

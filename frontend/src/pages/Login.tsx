@@ -5,12 +5,22 @@ import { FaSignInAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { IFormUser } from "../interface/app";
 import { useUserApi } from "../services/UserApi";
+import { useSession } from "../context/session";
+import { useEffect } from "react";
 
 interface FormValues extends Pick<IFormUser, "email" | "password"> {}
 
 const Login = () => {
   const userApi = useUserApi();
+  const { setSession, isLoggedIn } = useSession();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
+
   return (
     <Col md={{ span: 4, offset: 4 }}>
       <Row>
@@ -32,6 +42,7 @@ const Login = () => {
               try {
                 const { data } = await userApi.login(values);
                 if (data.success) {
+                  setSession({ token: data.token, user: data.user });
                   toast.success("Login Successfully");
                   navigate("/");
                 }

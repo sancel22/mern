@@ -6,13 +6,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
+import { SessionProvider } from "./context/session";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <SessionProvider>
+      <App />
+    </SessionProvider>
     <ToastContainer
       position="top-right"
       autoClose={3000}
