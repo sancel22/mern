@@ -11,7 +11,7 @@ import {
 } from "react-bootstrap";
 import { FaUser } from "react-icons/fa";
 import { Roles } from "../constants/app";
-import { FormUser } from "../interface/app";
+import { IFormUser } from "../interface/app";
 import { useUserApi } from "../services/UserApi";
 
 const roles = Object.entries(Roles);
@@ -39,7 +39,7 @@ const Register = () => {
               password2: "",
               roles: [] as string[],
             }}
-            onSubmit={async (values: FormUser) => {
+            onSubmit={async (values: IFormUser) => {
               const { password2, ...rest } = values;
               try {
                 const { data } = await userApi.create({ ...rest });

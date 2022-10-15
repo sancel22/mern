@@ -22,10 +22,8 @@ axiosAPI.interceptors.request.use((request) => {
 export default class BaseAPI {
   instance = axiosAPI;
 
-  setToken(accessToken: string) {
-    this.instance.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${accessToken}`;
+  setToken(jwt: string) {
+    this.instance.defaults.headers.common["Authorization"] = `Bearer ${jwt}`;
   }
 
   handleResponse = (response: AxiosResponse) => {

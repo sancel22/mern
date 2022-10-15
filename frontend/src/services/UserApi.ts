@@ -1,7 +1,7 @@
-import { FormUser } from "../interface/app";
+import { IFormUser } from "../interface/app";
 import BaseAPI from "./BaseApi";
 
-const baseURL = "/api";
+const baseURL = "/api/users";
 
 class UserApi extends BaseAPI {
   get = async (url: string) => {
@@ -11,15 +11,19 @@ class UserApi extends BaseAPI {
       .catch(this.handleError);
   };
 
-  post = async (url: string, data: Omit<FormUser, "password2">) => {
+  post = async (url: string, data: Partial<IFormUser>) => {
     return await this.instance
       .post(url, data, { baseURL })
       .then(this.handleResponse)
       .catch(this.handleError);
   };
 
-  create = async (data: Omit<FormUser, "password2">) => {
-    return await this.post("/users", data);
+  create = async (data: Omit<IFormUser, "password2">) => {
+    return await this.post("/", data);
+  };
+
+  login = async (data: Pick<IFormUser, "email" | "password">) => {
+    return await this.post("/login", data);
   };
 }
 

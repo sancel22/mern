@@ -1,13 +1,16 @@
+import { useNavigate } from "react-router-dom";
 import { Formik, Form } from "formik";
 import { Button, FloatingLabel, Row, Col, FormControl } from "react-bootstrap";
 import { FaSignInAlt } from "react-icons/fa";
-import { User } from "../interface/app";
+import { toast } from "react-toastify";
+import { IFormUser } from "../interface/app";
+import { useUserApi } from "../services/UserApi";
 
-interface FormValues extends Pick<User, "email"> {
-  password: string;
-}
+interface FormValues extends Pick<IFormUser, "email" | "password"> {}
 
 const Login = () => {
+  const userApi = useUserApi();
+  const navigate = useNavigate();
   return (
     <Col md={{ span: 4, offset: 4 }}>
       <Row>
@@ -25,7 +28,20 @@ const Login = () => {
               email: "",
               password: "",
             }}
-            onSubmit={(values: FormValues) => console.log(values)}
+            onSubmit={async (values: FormValues) => {
+              try {
+                const { data } = await userApi.login(values);
+                if (data.success) {
+                  toast.success("Login Successfully");
+                  navigate("/");
+                }
+              } catch (error) {
+                const err = error as { status: number; message: any };
+                if (err.status === 400) {
+                  toast.error(err.message.message);
+                }
+              }
+            }}
           >
             {({ values, handleChange }) => (
               <Form>

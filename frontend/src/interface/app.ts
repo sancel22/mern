@@ -1,6 +1,6 @@
-export interface User extends Omit<FormUser, "password" | "password"> {}
+export interface IUser extends Omit<IFormUser, "password" | "password"> {}
 
-export interface FormUser {
+export interface IFormUser {
   name: string;
   email: string;
   roles: string[];
