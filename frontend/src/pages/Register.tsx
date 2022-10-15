@@ -37,7 +37,7 @@ const Register = () => {
               email: "",
               password: "",
               password2: "",
-              roles: ["CREATOR"],
+              roles: [] as string[],
             }}
             onSubmit={(values: FormValues) => console.log(values)}
           >
