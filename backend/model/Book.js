@@ -15,7 +15,7 @@ const bookSchema = mongoose.Schema(
       type: String,
       required: [true, "Please add author"],
     },
-    published_date: Date,
+    published_year: String,
   },
   {
     timestamps: true,

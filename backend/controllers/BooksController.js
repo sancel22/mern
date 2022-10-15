@@ -1,12 +1,19 @@
 const asyncHandler = require("express-async-handler");
 
 const Book = require("../model/Book");
+const User = require("../model/User");
 
 // @desc  Get Books
 // @route GET /api/books
 // @access Private
 const getBooks = asyncHandler(async (req, res) => {
-  const books = await Book.find();
+  const user = await User.findById(req.user.id);
+  let books = [];
+  if (user.roles.map((role) => role.toUpperCase()).includes("VIEW ALL")) {
+    books = await Book.find();
+  } else {
+    books = await Book.find({ created_by: req.user.id });
+  }
   res.status(200).json(books);
 });
 
@@ -14,16 +21,21 @@ const getBooks = asyncHandler(async (req, res) => {
 // @route POST /api/books
 // @access Private
 const setBook = asyncHandler(async (req, res) => {
-  const { title, author, published_date } = req.body;
+  const { title, author, published_year } = req.body;
 
   if (!title || !author) {
     res.status(400);
     throw new Error("Please add all book information");
   }
 
-  const newBook = await Book.create({ title, author, published_date, created_by: req.user.id });
+  const newBook = await Book.create({
+    title,
+    author,
+    published_year,
+    created_by: req.user.id,
+  });
 
-  res.status(200).json(newBook);
+  res.status(200).json({ success: true, book: newBook });
 });
 
 // @desc  Update Book
@@ -51,6 +63,18 @@ const deleteBook = asyncHandler(async (req, res) => {
   if (!book) {
     req.status(400);
     throw new Error("Book not found!");
+  }
+
+  // Check for user
+  if (!req.user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+
+  // Make sure the logged in user matches the goal user
+  if (book.created_by.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error("User not authorized");
   }
 
   await book.remove();

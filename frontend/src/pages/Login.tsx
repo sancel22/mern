@@ -61,7 +61,7 @@ const Login = () => {
               }
             }}
           >
-            {({ values, errors, handleChange }) => (
+            {({ values, touched, errors, handleChange }) => (
               <Form>
                 <FloatingLabel label="Email" className="mb-3">
                   <FormControl
@@ -71,7 +71,7 @@ const Login = () => {
                     onChange={handleChange}
                     placeholder="Type your email"
                     className="form-control"
-                    isInvalid={!!errors.email}
+                    isInvalid={touched.email && !!errors.email}
                   />
                   <FormControl.Feedback type="invalid">
                     {errors.email}
@@ -83,7 +83,7 @@ const Login = () => {
                     type="password"
                     name="password"
                     value={values.password}
-                    isInvalid={!!errors.password}
+                    isInvalid={touched.password && !!errors.password}
                     onChange={handleChange}
                     placeholder="Type your password"
                     className="form-control"

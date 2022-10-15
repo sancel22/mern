@@ -84,6 +84,7 @@ const Register = () => {
             {({
               values,
               errors,
+              touched,
               handleChange,
               setFieldValue,
               handleSubmit,
@@ -96,7 +97,7 @@ const Register = () => {
                     value={values.name}
                     onChange={handleChange}
                     placeholder="Type your name"
-                    isInvalid={!!errors.name}
+                    isInvalid={touched.name && !!errors.name}
                     className={classnames("form-control")}
                   />
                   <FormControl.Feedback type="invalid">
@@ -110,7 +111,7 @@ const Register = () => {
                     value={values.email}
                     onChange={handleChange}
                     placeholder="Type your email"
-                    isInvalid={!!errors.email}
+                    isInvalid={touched.email && !!errors.email}
                     className={classnames("form-control")}
                   />
                   <FormControl.Feedback type="invalid">
@@ -125,7 +126,7 @@ const Register = () => {
                     value={values.password}
                     onChange={handleChange}
                     placeholder="Type your password"
-                    isInvalid={!!errors.password}
+                    isInvalid={touched.password && !!errors.password}
                     className={classnames("form-control")}
                   />
                   <FormControl.Feedback type="invalid">
@@ -140,7 +141,7 @@ const Register = () => {
                     value={values.password2}
                     onChange={handleChange}
                     placeholder="Confirm password"
-                    isInvalid={!!errors.password2}
+                    isInvalid={touched.password2 && !!errors.password2}
                     className={classnames("form-control")}
                   />
                   <FormControl.Feedback type="invalid">
@@ -155,25 +156,25 @@ const Register = () => {
                       id={key}
                       type="checkbox"
                       label={value}
-                      isInvalid={!!errors.roles}
+                      isInvalid={touched.roles && !!errors.roles}
                       className={classnames(errors.roles && "is-invalid")}
-                      checked={values.roles.includes(key)}
+                      checked={values.roles.includes(value)}
                       onChange={(e) => {
-                        const check = values.roles.includes(key);
+                        const check = values.roles.includes(value);
                         if (check) {
                           const newArray = values.roles.filter(
-                            (role) => role !== key
+                            (role) => role !== value
                           );
                           setFieldValue("roles", newArray);
                         } else {
                           const newArray = values.roles.concat();
-                          setFieldValue("roles", [...newArray, key]);
+                          setFieldValue("roles", [...newArray, value]);
                         }
                       }}
                     />
                   ))}
                   <FormControl.Feedback type="invalid">
-                    {errors.roles}
+                    {touched.roles && errors.roles}
                   </FormControl.Feedback>
                 </div>
                 <Button type="submit" variant="success">

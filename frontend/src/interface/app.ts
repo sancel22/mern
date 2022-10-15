@@ -8,6 +8,14 @@ export interface IFormUser {
   password2: string;
 }
 
+export interface IBook {
+  id: string;
+  createdBy: string;
+  title: string;
+  author: string;
+  publishedYear: string;
+}
+
 export interface ApiResponseError {
   status: number;
   message: FixMe;
