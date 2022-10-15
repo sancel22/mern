@@ -1,4 +1,6 @@
+import { useNavigate } from "react-router-dom";
 import { Formik, Form } from "formik";
+import { toast } from "react-toastify";
 import {
   Button,
   FloatingLabel,
@@ -9,16 +11,14 @@ import {
 } from "react-bootstrap";
 import { FaUser } from "react-icons/fa";
 import { Roles } from "../constants/app";
-import { User } from "../interface/app";
-
-interface FormValues extends User {
-  password: string;
-  password2: string;
-}
+import { FormUser } from "../interface/app";
+import { useUserApi } from "../services/UserApi";
 
 const roles = Object.entries(Roles);
 
 const Register = () => {
+  const userApi = useUserApi();
+  const navigate = useNavigate();
   return (
     <Col md={{ span: 4, offset: 4 }}>
       <Row>
@@ -39,7 +39,21 @@ const Register = () => {
               password2: "",
               roles: [] as string[],
             }}
-            onSubmit={(values: FormValues) => console.log(values)}
+            onSubmit={async (values: FormUser) => {
+              const { password2, ...rest } = values;
+              try {
+                const { data } = await userApi.create({ ...rest });
+                if (data.success) {
+                  toast.success("Successfully Registered");
+                  navigate("/login");
+                }
+              } catch (error) {
+                const err = error as { status: number; message: any };
+                if (err.status === 400) {
+                  toast.error(err.message.message);
+                }
+              }
+            }}
           >
             {({ values, handleChange, setFieldValue }) => (
               <Form>

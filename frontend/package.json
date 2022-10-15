@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "version": "0.1.0",
+  "proxy": "http://localhost:5000",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
@@ -10,7 +11,9 @@
     "@types/node": "^16.11.65",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
+    "axios": "^1.1.2",
     "bootstrap": "^5.2.2",
+    "camelcase-keys": "^8.0.2",
     "formik": "^2.2.9",
     "react": "^18.2.0",
     "react-bootstrap": "^2.5.0",

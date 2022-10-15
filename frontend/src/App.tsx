@@ -6,18 +6,20 @@ import Register from "./pages/Register";
 
 function App() {
   return (
-    <Router>
-      <Header />
-      <div className="container">
-        <div className="mt-5">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
+    <>
+      <Router>
+        <Header />
+        <div className="container">
+          <div className="mt-5">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </Router>
+      </Router>
+    </>
   );
 }
 

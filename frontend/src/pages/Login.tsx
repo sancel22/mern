@@ -1,6 +1,6 @@
 import { Formik, Form } from "formik";
 import { Button, FloatingLabel, Row, Col, FormControl } from "react-bootstrap";
-import { FaUser } from "react-icons/fa";
+import { FaSignInAlt } from "react-icons/fa";
 import { User } from "../interface/app";
 
 interface FormValues extends Pick<User, "email"> {
@@ -13,9 +13,9 @@ const Login = () => {
       <Row>
         <section className="heading">
           <h1>
-            <FaUser /> Register
+            <FaSignInAlt /> Login
           </h1>
-          <p>Please create an account</p>
+          <p>Login to access the dashboard.</p>
         </section>
       </Row>
       <Row>
