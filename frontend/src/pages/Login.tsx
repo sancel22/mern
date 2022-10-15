@@ -7,8 +7,14 @@ import { IFormUser } from "../interface/app";
 import { useUserApi } from "../services/UserApi";
 import { useSession } from "../context/session";
 import { useEffect } from "react";
+import * as Yup from "yup";
 
 interface FormValues extends Pick<IFormUser, "email" | "password"> {}
+
+const LoginSchema = Yup.object().shape({
+  email: Yup.string().email().required("Please type an email"),
+  password: Yup.string().required("Please type password"),
+});
 
 const Login = () => {
   const userApi = useUserApi();
@@ -38,6 +44,7 @@ const Login = () => {
               email: "",
               password: "",
             }}
+            validationSchema={LoginSchema}
             onSubmit={async (values: FormValues) => {
               try {
                 const { data } = await userApi.login(values);
@@ -54,7 +61,7 @@ const Login = () => {
               }
             }}
           >
-            {({ values, handleChange }) => (
+            {({ values, errors, handleChange }) => (
               <Form>
                 <FloatingLabel label="Email" className="mb-3">
                   <FormControl
@@ -64,7 +71,11 @@ const Login = () => {
                     onChange={handleChange}
                     placeholder="Type your email"
                     className="form-control"
+                    isInvalid={!!errors.email}
                   />
+                  <FormControl.Feedback type="invalid">
+                    {errors.email}
+                  </FormControl.Feedback>
                 </FloatingLabel>
                 <FloatingLabel label="Password" className="mb-3">
                   <FormControl
@@ -72,10 +83,14 @@ const Login = () => {
                     type="password"
                     name="password"
                     value={values.password}
+                    isInvalid={!!errors.password}
                     onChange={handleChange}
                     placeholder="Type your password"
                     className="form-control"
                   />
+                  <FormControl.Feedback type="invalid">
+                    {errors.password}
+                  </FormControl.Feedback>
                 </FloatingLabel>
                 <Button type="submit" variant="success">
                   Submit
