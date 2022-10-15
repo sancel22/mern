@@ -1,4 +1,5 @@
 const asyncHandler = require("express-async-handler");
+const dayjs = require("dayjs");
 
 const Book = require("../model/Book");
 const User = require("../model/User");
@@ -7,13 +8,34 @@ const User = require("../model/User");
 // @route GET /api/books
 // @access Private
 const getBooks = asyncHandler(async (req, res) => {
+  const min10 = dayjs().subtract(10, "minute");
   const user = await User.findById(req.user.id);
-  let books = [];
+  let onlyMe = {
+    created_by: req.user.id,
+  };
   if (user.roles.map((role) => role.toUpperCase()).includes("VIEW ALL")) {
-    books = await Book.find();
-  } else {
-    books = await Book.find({ created_by: req.user.id });
+    onlyMe = {};
   }
+  const query = Book.find(onlyMe);
+  const reqQuery = Object.entries(req.query);
+  if (reqQuery.length > 0) {
+    const [target, value] = reqQuery[0];
+    if (target === "new") {
+      if (value === "1") {
+        query.where("createdAt").gte(min10);
+      } else {
+        query.sort({ createdAt: "desc" });
+      }
+    }
+    if (target === "old") {
+      if (value === "1") {
+        query.where("createdAt").lte(min10);
+      } else {
+        query.sort({ createdAt: "asc" });
+      }
+    }
+  }
+  const books = await query.exec();
   res.status(200).json(books);
 });
 

@@ -1,4 +1,6 @@
-export interface IUser extends Omit<IFormUser, "password" | "password"> {}
+export interface IUser extends Omit<IFormUser, "password" | "password"> {
+  id: string;
+}
 
 export interface IFormUser {
   name: string;
@@ -14,6 +16,7 @@ export interface IBook {
   title: string;
   author: string;
   publishedYear: string;
+  createdAt: Date;
 }
 
 export interface ApiResponseError {

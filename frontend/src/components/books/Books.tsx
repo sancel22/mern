@@ -1,63 +1,79 @@
-import { Dispatch, FC } from "react";
-import { Table, ButtonGroup, Button } from "react-bootstrap";
-import { FaPenAlt, FaTrashAlt } from "react-icons/fa";
+import { Dispatch, FC, useState } from "react";
+import { Table, ButtonGroup, Button, Card, FormCheck } from "react-bootstrap";
+import { FaPenAlt, FaTrashAlt, FaSort, FaFilter } from "react-icons/fa";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { toast } from "react-toastify";
+import { Roles } from "../../constants/app";
 import { ApiResponseError, IBook } from "../../interface/app";
 import { useBookApi } from "../../services/Books";
+
+dayjs.extend(relativeTime);
 
 interface IProps extends IBook {
   hideInfo?: boolean;
   handleDelete: (param: string) => void;
+  haveActions?: boolean;
 }
 const DisplayBook: FC<IProps> = ({
   id,
   title,
   author,
   publishedYear,
+  createdAt,
   handleDelete,
   hideInfo = false,
+  haveActions = false,
 }) => {
   return (
     <tr>
       {hideInfo ? (
-        <td colSpan={3}> No Viewer Role</td>
+        <td colSpan={4}> No Viewer Role</td>
       ) : (
         <>
           <td>{title}</td>
           <td>{author}</td>
           <td>{publishedYear}</td>
+          <td>{dayjs(createdAt).fromNow()}</td>
         </>
       )}
       <td>
-        <ButtonGroup>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => console.log("Edit")}
-          >
-            <FaPenAlt /> Edit
-          </Button>
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={handleDelete.bind(null, id)}
-          >
-            <FaTrashAlt /> Delete
-          </Button>
-        </ButtonGroup>
+        {haveActions && (
+          <>
+            <ButtonGroup>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => console.log("Edit")}
+              >
+                <FaPenAlt /> Edit
+              </Button>
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={handleDelete.bind(null, id)}
+              >
+                <FaTrashAlt /> Delete
+              </Button>
+            </ButtonGroup>
+          </>
+        )}
       </td>
     </tr>
   );
 };
 
 interface IBooksProps {
+  userId: string;
   roles: string[];
   books?: IBook[];
   setBooks: Dispatch<React.SetStateAction<IBook[]>>;
 }
 
-const Books: FC<IBooksProps> = ({ books, setBooks, roles }) => {
+const Books: FC<IBooksProps> = ({ books, setBooks, roles, userId }) => {
   const bookApi = useBookApi();
+  const [oldNew, setOldNew] = useState<string>();
+
   const handleDelete = async (id: string) => {
     try {
       const { data } = await bookApi.delete(id);
@@ -72,15 +88,64 @@ const Books: FC<IBooksProps> = ({ books, setBooks, roles }) => {
       }
     }
   };
+
+  const handleFilter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const query = e.currentTarget.name;
+    if (oldNew) {
+      console.log("calling api");
+      (async () => {
+        try {
+          const { data } = await bookApi.get(
+            `/?${oldNew}=${query}&t=${Date.now()}`
+          );
+          setBooks(data);
+        } catch {}
+      })();
+    }
+  };
+  const handleOldNew = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    setOldNew(e.currentTarget.value);
+  };
   return (
     <>
-      <Table>
+      <Card className="mb-3">
+        <Card.Body>
+          <div className="mb-3">
+            <FormCheck
+              type="radio"
+              name="timeframe"
+              value="new"
+              id="new"
+              label="Within 10 minutes"
+              onClick={handleOldNew}
+            />
+            <FormCheck
+              type="radio"
+              name="timeframe"
+              value="old"
+              onClick={handleOldNew}
+              id="old"
+              label="10 minutes ago"
+            />
+          </div>
+          <ButtonGroup>
+            <Button name="1" variant="warning" onClick={handleFilter}>
+              <FaFilter /> Filter
+            </Button>
+            <Button name="2" variant="info" onClick={handleFilter}>
+              <FaSort /> Sort
+            </Button>
+          </ButtonGroup>
+        </Card.Body>
+      </Card>
+      <Table responsive striped hover>
         <thead>
           <tr>
             <th>Title</th>
             <th>Author</th>
             <th>Year Published</th>
-            <th>Action</th>
+            <th>Created At</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -90,12 +155,21 @@ const Books: FC<IBooksProps> = ({ books, setBooks, roles }) => {
                 {...book}
                 key={key}
                 handleDelete={handleDelete}
-                hideInfo
+                haveActions={book.createdBy === userId}
+                hideInfo={
+                  !roles
+                    .map((role) => role.toLocaleUpperCase())
+                    .some(
+                      (r) =>
+                        r === Roles.VIEWER.toLocaleUpperCase() ||
+                        r === Roles.VIEW_ALL.toLocaleUpperCase()
+                    )
+                }
               />
             ))
           ) : (
             <tr>
-              <td colSpan={4} className="text-center">
+              <td colSpan={5} className="text-center">
                 No books found!
               </td>
             </tr>

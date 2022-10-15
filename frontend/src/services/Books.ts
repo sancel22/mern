@@ -21,13 +21,13 @@ class BookApi extends BaseAPI {
   create = async ({
     publishedYear: published_year,
     ...rest
-  }: Omit<IBook, "id" | "createdBy">) => {
+  }: Pick<IBook, "title" | "author" | "publishedYear">) => {
     return await this.post("/", { published_year, ...rest });
   };
 
   delete = async (id: string) => {
     return await this.instance
-      .delete(`/${id}`, {baseURL})
+      .delete(`/${id}`, { baseURL })
       .then(this.handleResponse)
       .catch(this.handleError);
   };
