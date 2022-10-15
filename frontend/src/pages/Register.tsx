@@ -15,8 +15,23 @@ import { IFormUser } from "../interface/app";
 import { useUserApi } from "../services/UserApi";
 import { useSession } from "../context/session";
 import { useEffect } from "react";
+import * as Yup from "yup";
+import classnames from "classnames";
 
 const roles = Object.entries(Roles);
+
+const UserSchema = Yup.object().shape({
+  name: Yup.string().required("Please input name"),
+  email: Yup.string().email().required("Please input email"),
+  password: Yup.string().required("Please input password"),
+  password2: Yup.string()
+    .required("Please retype password")
+    .oneOf([Yup.ref("password"), null], "Passwords must match"),
+  roles: Yup.array(Yup.string().required("Please select Role")).min(
+    1,
+    "Please select at least 1 role"
+  ),
+});
 
 const Register = () => {
   const userApi = useUserApi();
@@ -49,6 +64,7 @@ const Register = () => {
               password2: "",
               roles: [] as string[],
             }}
+            validationSchema={UserSchema}
             onSubmit={async (values: IFormUser) => {
               const { password2, ...rest } = values;
               try {
@@ -65,7 +81,13 @@ const Register = () => {
               }
             }}
           >
-            {({ values, handleChange, setFieldValue }) => (
+            {({
+              values,
+              errors,
+              handleChange,
+              setFieldValue,
+              handleSubmit,
+            }) => (
               <Form>
                 <FloatingLabel label="Name" className="mb-3">
                   <FormControl
@@ -74,8 +96,12 @@ const Register = () => {
                     value={values.name}
                     onChange={handleChange}
                     placeholder="Type your name"
-                    className="form-control"
+                    isInvalid={!!errors.name}
+                    className={classnames("form-control")}
                   />
+                  <FormControl.Feedback type="invalid">
+                    {errors.name}
+                  </FormControl.Feedback>
                 </FloatingLabel>
                 <FloatingLabel label="Email" className="mb-3">
                   <FormControl
@@ -84,8 +110,12 @@ const Register = () => {
                     value={values.email}
                     onChange={handleChange}
                     placeholder="Type your email"
-                    className="form-control"
+                    isInvalid={!!errors.email}
+                    className={classnames("form-control")}
                   />
+                  <FormControl.Feedback type="invalid">
+                    {errors.email}
+                  </FormControl.Feedback>
                 </FloatingLabel>
                 <FloatingLabel label="Password" className="mb-3">
                   <FormControl
@@ -95,8 +125,12 @@ const Register = () => {
                     value={values.password}
                     onChange={handleChange}
                     placeholder="Type your password"
-                    className="form-control"
+                    isInvalid={!!errors.password}
+                    className={classnames("form-control")}
                   />
+                  <FormControl.Feedback type="invalid">
+                    {errors.password}
+                  </FormControl.Feedback>
                 </FloatingLabel>
                 <FloatingLabel label="Confirm Password" className="mb-3">
                   <FormControl
@@ -106,8 +140,12 @@ const Register = () => {
                     value={values.password2}
                     onChange={handleChange}
                     placeholder="Confirm password"
-                    className="form-control"
+                    isInvalid={!!errors.password2}
+                    className={classnames("form-control")}
                   />
+                  <FormControl.Feedback type="invalid">
+                    {errors.password2}
+                  </FormControl.Feedback>
                 </FloatingLabel>
                 <div className="mb-3">
                   <b>Select Role</b>
@@ -117,6 +155,8 @@ const Register = () => {
                       id={key}
                       type="checkbox"
                       label={value}
+                      isInvalid={!!errors.roles}
+                      className={classnames(errors.roles && "is-invalid")}
                       checked={values.roles.includes(key)}
                       onChange={(e) => {
                         const check = values.roles.includes(key);
@@ -132,6 +172,9 @@ const Register = () => {
                       }}
                     />
                   ))}
+                  <FormControl.Feedback type="invalid">
+                    {errors.roles}
+                  </FormControl.Feedback>
                 </div>
                 <Button type="submit" variant="success">
                   Submit
