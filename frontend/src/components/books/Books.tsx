@@ -95,9 +95,7 @@ const Books: FC<IBooksProps> = ({ books, setBooks, roles, userId }) => {
       console.log("calling api");
       (async () => {
         try {
-          const { data } = await bookApi.get(
-            `/?${oldNew}=${query}&t=${Date.now()}`
-          );
+          const { data } = await bookApi.get(`/?${oldNew}=${query}`);
           setBooks(data);
         } catch {}
       })();

@@ -21,5 +21,5 @@ const bookSchema = mongoose.Schema(
     timestamps: true,
   }
 );
-mongoose.set('debug', true);
+// mongoose.set('debug', true);
 module.exports = mongoose.model("Book", bookSchema);
