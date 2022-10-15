@@ -43,7 +43,7 @@ const Dashboard = () => {
         />
       </Col>
       <Col>
-        <Books books={books} />
+        <Books books={books} setBooks={setBooks} roles={user.roles} />
       </Col>
     </Row>
   );

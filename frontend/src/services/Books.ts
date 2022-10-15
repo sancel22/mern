@@ -25,6 +25,12 @@ class BookApi extends BaseAPI {
     return await this.post("/", { published_year, ...rest });
   };
 
+  delete = async (id: string) => {
+    return await this.instance
+      .delete(`/${id}`, {baseURL})
+      .then(this.handleResponse)
+      .catch(this.handleError);
+  };
 }
 
 function useBookApi() {
