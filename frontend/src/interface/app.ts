@@ -10,6 +10,9 @@ export interface IFormUser {
   password2: string;
 }
 
+export interface IBookInitialValues
+  extends Pick<IBook, "id" | "title" | "author" | "publishedYear"> {}
+
 export interface IBook {
   id: string;
   createdBy: string;

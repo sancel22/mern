@@ -6,7 +6,7 @@ import { Row, Col } from "react-bootstrap";
 import AddBook from "../components/books/AddBooks";
 import Books from "../components/books/Books";
 import { Roles } from "../constants/app";
-import { IBook } from "../interface/app";
+import { IBook, IBookInitialValues } from "../interface/app";
 import { useBookApi } from "../services/Books";
 
 const Dashboard = () => {
@@ -14,6 +14,12 @@ const Dashboard = () => {
   const booksApi = useBookApi();
   const navigate = useNavigate();
   const [books, setBooks] = useState<IBook[]>([]);
+  const [initialValues, setInitialValues] = useState<IBookInitialValues>({
+    id: "",
+    author: "",
+    title: "",
+    publishedYear: "",
+  });
 
   useEffect(() => {
     (async () => {
@@ -40,6 +46,8 @@ const Dashboard = () => {
             .map((role) => role.toUpperCase())
             .includes(Roles.CREATOR.toUpperCase())}
           setBooks={setBooks}
+          initialValues={initialValues}
+          setInitialValues={setInitialValues}
         />
       </Col>
       <Col>
@@ -48,6 +56,7 @@ const Dashboard = () => {
           setBooks={setBooks}
           roles={user.roles}
           userId={user.id}
+          setInitialValues={setInitialValues}
         />
       </Col>
     </Row>

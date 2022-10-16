@@ -5,7 +5,11 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { toast } from "react-toastify";
 import { Roles } from "../../constants/app";
-import { ApiResponseError, IBook } from "../../interface/app";
+import {
+  ApiResponseError,
+  IBook,
+  IBookInitialValues,
+} from "../../interface/app";
 import { useBookApi } from "../../services/Books";
 
 dayjs.extend(relativeTime);
@@ -13,6 +17,7 @@ dayjs.extend(relativeTime);
 interface IProps extends IBook {
   hideInfo?: boolean;
   handleDelete: (param: string) => void;
+  handleEdit: (param: string) => void;
   haveActions?: boolean;
 }
 const DisplayBook: FC<IProps> = ({
@@ -22,6 +27,7 @@ const DisplayBook: FC<IProps> = ({
   publishedYear,
   createdAt,
   handleDelete,
+  handleEdit,
   hideInfo = false,
   haveActions = false,
 }) => {
@@ -44,7 +50,7 @@ const DisplayBook: FC<IProps> = ({
               <Button
                 variant="primary"
                 size="sm"
-                onClick={() => console.log("Edit")}
+                onClick={handleEdit.bind(null, id)}
               >
                 <FaPenAlt /> Edit
               </Button>
@@ -68,9 +74,16 @@ interface IBooksProps {
   roles: string[];
   books?: IBook[];
   setBooks: Dispatch<React.SetStateAction<IBook[]>>;
+  setInitialValues: Dispatch<React.SetStateAction<IBookInitialValues>>;
 }
 
-const Books: FC<IBooksProps> = ({ books, setBooks, roles, userId }) => {
+const Books: FC<IBooksProps> = ({
+  books,
+  setBooks,
+  roles,
+  userId,
+  setInitialValues,
+}) => {
   const bookApi = useBookApi();
   const [oldNew, setOldNew] = useState<string>();
 
@@ -89,10 +102,21 @@ const Books: FC<IBooksProps> = ({ books, setBooks, roles, userId }) => {
     }
   };
 
+  const handleEdit = async (id: string) => {
+    const book = books?.find((r) => r.id === id);
+    if (book) {
+      setInitialValues({
+        id: book.id,
+        title: book.title,
+        author: book.author,
+        publishedYear: book.publishedYear,
+      });
+    }
+  };
+
   const handleFilter = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const query = e.currentTarget.name;
     if (oldNew) {
-      console.log("calling api");
       (async () => {
         try {
           const { data } = await bookApi.get(`/?${oldNew}=${query}`);
@@ -153,6 +177,7 @@ const Books: FC<IBooksProps> = ({ books, setBooks, roles, userId }) => {
                 {...book}
                 key={key}
                 handleDelete={handleDelete}
+                handleEdit={handleEdit}
                 haveActions={book.createdBy === userId}
                 hideInfo={
                   !roles

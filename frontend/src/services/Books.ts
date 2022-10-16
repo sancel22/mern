@@ -1,4 +1,4 @@
-import { FixMe, IBook } from "../interface/app";
+import { FixMe, IBook, IBookInitialValues } from "../interface/app";
 import BaseAPI from "./BaseApi";
 
 const baseURL = "/api/books";
@@ -18,10 +18,17 @@ class BookApi extends BaseAPI {
       .catch(this.handleError);
   };
 
+  edit = async ({ id, ...rest }: IBookInitialValues) => {
+    return await this.instance
+      .put(`/${id}`, rest, { baseURL })
+      .then(this.handleResponse)
+      .catch(this.handleError);
+  };
+
   create = async ({
     publishedYear: published_year,
     ...rest
-  }: Pick<IBook, "title" | "author" | "publishedYear">) => {
+  }: Omit<IBookInitialValues, "id">) => {
     return await this.post("/", { published_year, ...rest });
   };
 

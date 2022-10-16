@@ -5,7 +5,11 @@ import { Dispatch, FC } from "react";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { useBookApi } from "../../services/Books";
-import { ApiResponseError, IBook } from "../../interface/app";
+import {
+  ApiResponseError,
+  IBook,
+  IBookInitialValues,
+} from "../../interface/app";
 
 const BookSchema = Yup.object().shape({
   title: Yup.string().required("Please input book title"),
@@ -17,9 +21,16 @@ const BookSchema = Yup.object().shape({
 interface IAddBook {
   canAdd: boolean;
   setBooks: Dispatch<React.SetStateAction<IBook[]>>;
+  initialValues: IBookInitialValues;
+  setInitialValues: Dispatch<React.SetStateAction<IBookInitialValues>>;
 }
 
-const AddBook: FC<IAddBook> = ({ canAdd, setBooks }) => {
+const AddBook: FC<IAddBook> = ({
+  canAdd,
+  setBooks,
+  initialValues,
+  setInitialValues,
+}) => {
   const bookApi = useBookApi();
   return (
     <Card>
@@ -30,20 +41,40 @@ const AddBook: FC<IAddBook> = ({ canAdd, setBooks }) => {
       <Card.Body>
         {canAdd ? (
           <Formik
-            initialValues={{
-              title: "",
-              author: "",
-              publishedYear: "",
-            }}
+            enableReinitialize
+            initialValues={initialValues}
             validationSchema={BookSchema}
             onSubmit={async (values, { resetForm }) => {
               try {
-                const { data } = await bookApi.create(values);
-                if (data.success) {
-                  resetForm();
-                  setBooks((prev) => [...prev, data.book]);
-                  toast.success("Successfully Added");
+                // Send edit or create request
+                if (values.id) {
+                  const { data } = await bookApi.edit(values);
+                  if (data.success) {
+                    toast.success("Successfully Edited");
+                    setBooks((prev) =>
+                      prev.map((p) => {
+                        return p.id === data.updatedBook.id
+                          ? data.updatedBook
+                          : p;
+                      })
+                    );
+                  }
+                } else {
+                  const { data } = await bookApi.create(values);
+                  if (data.success) {
+                    setBooks((prev) => [...prev, data.book]);
+                    toast.success("Successfully Added");
+                    resetForm();
+                  }
                 }
+
+                // Reset values
+                setInitialValues({
+                  id: "",
+                  title: "",
+                  author: "",
+                  publishedYear: "",
+                });
               } catch (error) {
                 const err = error as ApiResponseError;
                 if (err.status === 400) {

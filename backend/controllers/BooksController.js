@@ -74,7 +74,7 @@ const updateBook = asyncHandler(async (req, res) => {
     new: true,
   });
 
-  res.status(200).json(updatedBook);
+  res.status(200).json({ success: true, updatedBook });
 });
 
 // @desc  Delete Book
